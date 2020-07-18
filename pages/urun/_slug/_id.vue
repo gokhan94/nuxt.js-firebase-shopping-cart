@@ -91,8 +91,11 @@ export default {
     },
     methods: {
         addComment(){
-     
-            console.log(this.comment, this.id)
+          const commentData = {
+            comment:   this.comment,
+            productId: this.id
+          }
+          this.$store.dispatch('comment/addComment', commentData)
         }
     }
 }

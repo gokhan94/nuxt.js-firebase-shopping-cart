@@ -42,7 +42,6 @@ export const actions = {
                 userName: payload.userName,
                 createdAt: new Date().toISOString()
             }
-            //return firebaseApp.database().ref('users').push(userData)
             return firebaseApp.database().ref(`users/${newUser.uid}`).set(userData)
         })
         .then(() => {
