@@ -36,7 +36,6 @@ export const actions = {
                 commit('setUser', currentUser)
             })
         })
-        // Kullanıcı veritabanına kayıt edilir
         .then(() => {
             const userData = {
                 email:    payload.email,
@@ -50,7 +49,6 @@ export const actions = {
             //Kullanıcıyı group alanına ekleme
             return firebaseApp.database().ref('groups').orderByChild('name').equalTo('Super Admin').once('value')
             .then(snapShot => {
-                // -MAWNRuS33kwhUaChfiT -> group key değeri
                 let item = Object.keys(snapShot.val())[0]
                
                 let updateUserGroup = {}
