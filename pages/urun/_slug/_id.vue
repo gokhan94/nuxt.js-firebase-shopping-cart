@@ -67,14 +67,23 @@
                 </span>
               </p>
           </div>
-
-
+      
+       <Comments  :comments="comments"/>
 
   </div>  
 </template>
 <script>
 import firebaseApp from '@/plugins/firebase'
+import Comments    from '@/components/comments'
 export default {
+    created(){
+      if(this.$store.getters['comment/getComments']){
+        this.$store.dispatch('comment/getComment')
+      }
+    },
+    components: {
+      Comments
+    },
     data(){
         return {
             comment: '',
@@ -91,12 +100,20 @@ export default {
     },
     methods: {
         addComment(){
+          let user = firebaseApp.auth().currentUser
+
           const commentData = {
             comment:   this.comment,
-            productId: this.id
+            productId: this.id,
+            userName : user.displayName
           }
           this.$store.dispatch('comment/addComment', commentData)
         }
+    },
+    computed: {
+      comments(){
+        return this.$store.getters['comment/getComments']
+      }
     }
 }
 </script>
