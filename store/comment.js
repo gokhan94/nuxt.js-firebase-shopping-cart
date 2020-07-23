@@ -14,6 +14,8 @@ export const actions = {
     addComment({commit}, payload){
         return firebaseApp.database().ref('comments').push(payload)
         .then(comment => {
+            console.log(comment.key)
+
 
             let user = firebaseApp.auth().currentUser
 
@@ -24,8 +26,10 @@ export const actions = {
 
             const commentUpdate = {}
             commentUpdate[`productComments/${payload.productId}/${comment.key}`] = commentProduct
-            return firebaseApp.database().ref().update(commentUpdate)         
-
+            return firebaseApp.database().ref().update(commentUpdate) 
+            .then(() => {
+                return firebaseApp.database().ref(`products/${payload.productId}`).update({ commentKey: comment.key})
+            })
         })
         .catch((err) => {
             console.log(err)

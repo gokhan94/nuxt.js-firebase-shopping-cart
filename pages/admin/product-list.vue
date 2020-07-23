@@ -63,7 +63,8 @@ export default {
       this.$store.dispatch('product/removeProduct', product)
     },
     editProduct(product){
-      console.log(product)
+        this.$store.commit('product/loadProduct', product)
+        this.$router.push('product-edit')
     }
   }
 }

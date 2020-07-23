@@ -1,12 +1,16 @@
 import firebaseApp from '@/plugins/firebase'
 
 export const state = () => ({
-    products: []
+    products: [],
+    product: null
 })
 
 export const mutations = {
     productAddState(state, payload){
         state.products = payload
+    },
+    loadProduct(state, payload){
+        state.product = payload
     }
 }
 
@@ -82,12 +86,60 @@ export const actions = {
     },
     removeProduct({commit}, payload){
         const imageURL = payload.imageURL
-        console.log(imageURL)
-    }
+        // "https://firebasestorage.googleapis.com/v0/b/nuxt-shopping.appspot.com/o/images%2Fssss.jpg?alt=media&token=aee3c90d-0560-465c-8eda-6c494234dc24"
+        
+        const refUrl   = imageURL.split('?')[0]
+        // "https://firebasestorage.googleapis.com/v0/b/nuxt-shopping.appspot.com/o/images%2Fssss.jpg"
+
+        const imageRef = firebaseApp.storage().refFromURL(refUrl)
+        imageRef.delete()
+        .then(() => {
+            return firebaseApp.database().ref('products').child(payload.key).remove()
+            .then(() => {
+                // Ürün hangi kategoriye aitse ondanda silmem lazım
+                return firebaseApp.database().ref('categories').once('value')
+                .then(snapShot => {
+                    const categoryData = Object.values(snapShot.val())
+
+                    let updated = {}
+
+                  // ilk önce kategoriler çekilir
+                  // productCategories tablosunda ilgili kategori ismine denk gelen product id silinir
+
+                    categoryData.forEach(category => {
+                        updated[`productCategories/${category.name}/${payload.key}`] = null       
+                    })
+
+                    return firebaseApp.database().ref().update(updated)
+
+                })
+            })
+        })
+        return firebaseApp.database().ref('comments').once('value')
+        .then(snapShot => {
+           const commentData = Object.keys(snapShot.val())
+
+           let updatedData = {}
+           commentData.forEach(commentKey => {
+               updatedData[`productComments/${payload.key}/${commentKey}`] = null
+               if(commentKey == payload.commentKey){
+                updatedData[`comments/${commentKey}`] = null  
+               }
+           })
+
+           return firebaseApp.database().ref().update(updatedData)
+        })
+    },
+    productCategories({commit}, payload){
+        console.log(payload)
+    },
 }
 
 export const getters = {
     getProduct(state){
         return state.products
+    },
+    getProductEdit(state){
+        return state.product
     }
 }

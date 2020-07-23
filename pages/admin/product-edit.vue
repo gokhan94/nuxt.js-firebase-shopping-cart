@@ -112,18 +112,29 @@
 
 <script>
 export default {
-  //mounted(){
-   // this.$store.dispatch('product/getProducts')
-  //},
+  mounted(){
+     // product categories
+     const category = this.$store.getters['category/getCategories']
+      if (category.length === 0) {
+        this.$store.dispatch('category/getCategories')
+      }
+     // product/:id
+     const product = this.$store.getters['product/getProductEdit']
+      if(product != null){
+        this.loadProduct(product)
+        this.$store.dispatch('product/productCategories', product.key)
+      }
+  },
   data(){
     return {
       product: {
+        key: 0,
         name: '',
         code: '',
         brand: '',
         price: '',
         stock: '',
-        category: [], // [ "-MBxh32QVOY1GSbfbbQT" ]
+        category: [], 
         status: 1,
         detail: '',
         image: '',
@@ -133,14 +144,9 @@ export default {
   },
   methods: {
     addProduct(){
-      //console.log(this.product.categoryChange)
-      this.$store.dispatch('product/addProduct', {...this.product})
+        this.$store.dispatch('product/addProduct', {...this.product})
     },
     uploadImage(e){
-      //const file = e.target.files[0]
-      //this.product.image = file
-      //console.log(file);
-
       const file = e.target.files[0];
       this.product.image = file
 
@@ -149,7 +155,18 @@ export default {
         this.product.imageURL = reader.result
       }
        reader.readAsDataURL(file)
-    }
+    },
+    loadProduct(product){
+        this.product.key =   product.key  
+        this.product.name=   product.name,
+        this.product.code=   product.code,
+        this.product.brand=  product.brand,
+        this.product.price=  product.price,
+        this.product.stock=  product.stock,
+        this.product.status= product.status,
+        this.product.detail= product.detail,
+        this.product.imageURL= product.imageURL
+    },
   },
   computed: {
     categories(){
