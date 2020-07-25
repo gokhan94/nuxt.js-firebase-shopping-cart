@@ -2,7 +2,10 @@ import firebaseApp from '@/plugins/firebase'
 
 export const state = () => ({
     products: [],
-    product: null
+    product: null,
+    cart: {
+        items: []
+    }
 })
 
 export const mutations = {
@@ -11,6 +14,18 @@ export const mutations = {
     },
     loadProduct(state, payload){
         state.product = payload
+    },
+    updateCart(state, payload){
+        state.cart.items.push(payload)
+    },
+    emptyCart(state){
+        state.cart.items = []
+    },   
+    updateQuantity(state, payload){
+        state.cart.items[payload.productKey].qauntity = payload.productQuantity
+    },
+    incQuantity(state, payload){
+        state.cart.items[payload].qauntity++
     }
 }
 
@@ -20,7 +35,7 @@ export const actions = {
         const imageName  = payload.image.name
         let imageURL   = payload.imageURL
         
-        let productKey = '' // eklenen ürünün key değerini veriyor
+        let productKey = '' 
 
         const productData = {
             brand: payload.brand,
@@ -141,5 +156,8 @@ export const getters = {
     },
     getProductEdit(state){
         return state.product
+    },
+    cart(state){
+        return state.cart
     }
 }

@@ -39,7 +39,7 @@
               <input class="input has-text-centered" style="width:50px;" type="number" ref="quantity" name="" value="1">
             </p>
             <p class="control">
-              <a class="button is-primary">Add to cart</a>
+              <a class="button is-primary" @click.prevent="addToCart(product, $refs.quantity.value)">Add to cart</a>
             </p>
           </div>                    
           
@@ -75,12 +75,14 @@
 <script>
 import firebaseApp from '@/plugins/firebase'
 import Comments    from '@/components/comments'
+import cartMixin   from '@/mixins/cartMixin'
 export default {
     created(){
       if(this.$store.getters['comment/getComments']){
         this.$store.dispatch('comment/getComment')
       }
     },
+    mixins: [cartMixin],
     components: {
       Comments
     },
